@@ -16,12 +16,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
 app.config['JWT_SECRET_KEY'] = os.environ.get("JWT_SECRET_KEY")
 
 db = SQLAlchemy(app=app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 jwt = JWTManager(app)
-
-
-last_call_time = None
-
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
