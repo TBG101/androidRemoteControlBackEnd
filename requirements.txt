@@ -7,3 +7,4 @@ flask_socketio
 flask_sqlalchemy
 gunicorn
 gevent
+psycopg2
