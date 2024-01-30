@@ -1,0 +1,8 @@
+datetime
+jsons
+bcrypt
+flask
+flask_jwt_extended
+flask_socketio
+flask_sqlalchemy
+dotenv
