@@ -6,12 +6,14 @@ from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from bcrypt import hashpw, gensalt, checkpw
+import os
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "adSF41zef3X4d>51Hsxd4WSx4N"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
+app.config["SECRET_KEY"] = os.environ.get(
+    "SECRET_KEY")  # "adSF41zef3X4d>51Hsxd4WSx4N"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "SQLALCHEMY_DATABASE_URI")  # "sqlite:///db.sqlite3"
+app.config['JWT_SECRET_KEY'] = os.environ.get("JWT_SECRET_KEY")
 
 db = SQLAlchemy(app=app)
 socketio = SocketIO(app, cors_allowed_origins="*")
