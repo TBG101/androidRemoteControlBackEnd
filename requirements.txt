@@ -6,3 +6,4 @@ flask_jwt_extended
 flask_socketio
 flask_sqlalchemy
 gunicorn
+gevent
