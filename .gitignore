@@ -1,2 +1,2 @@
-./serverVenv
-./__pycache__
+serverVenv
+__pycache__
