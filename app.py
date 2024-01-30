@@ -14,7 +14,7 @@ app.config["SECRET_KEY"] = os.environ.get(
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "SQLALCHEMY_DATABASE_URI")  # "sqlite:///db.sqlite3"
 app.config['JWT_SECRET_KEY'] = os.environ.get("JWT_SECRET_KEY")
-
+#postgres://rendertest_r352_user:RSktorie8bd9W3PFkONm3IxP4VD9sXGN@dpg-cms3lb821fec73cj7lm0-a.oregon-postgres.render.com/rendertest_r352
 db = SQLAlchemy(app=app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 jwt = JWTManager(app)
@@ -40,8 +40,8 @@ connected_phones = {}
 connected_pcs = {}
 
 
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
 
 
 def is_user_connected(user_sid):
@@ -226,6 +226,3 @@ def handle_create_connection(data):
     print(f"connection with {target} and {request.sid}")
     socketio.emit("createconnection", str(request.sid), room=target)
 
-
-if __name__ == '__main__':
-    socketio.run(app)
