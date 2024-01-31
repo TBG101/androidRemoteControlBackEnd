@@ -9,15 +9,15 @@ from bcrypt import hashpw, gensalt, checkpw
 import os
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.environ.get(
-    "SECRET_KEY")  # "adSF41zef3X4d>51Hsxd4WSx4N"
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-    "SQLALCHEMY_DATABASE_URI")  # "sqlite:///db.sqlite3"
+    "DATABASE_URL")
 app.config['JWT_SECRET_KEY'] = os.environ.get("JWT_SECRET_KEY")
-#postgres://rendertest_r352_user:RSktorie8bd9W3PFkONm3IxP4VD9sXGN@dpg-cms3lb821fec73cj7lm0-a.oregon-postgres.render.com/rendertest_r352
+
 db = SQLAlchemy(app=app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 jwt = JWTManager(app)
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -38,10 +38,6 @@ class User(db.Model):
 # { "email": [ list of sid of phones here | "sid_here","sid_here "]}
 connected_phones = {}
 connected_pcs = {}
-
-
-# with app.app_context():
-#     db.create_all()
 
 
 def is_user_connected(user_sid):
@@ -225,4 +221,3 @@ def handle_create_connection(data):
     target = data["target"]
     print(f"connection with {target} and {request.sid}")
     socketio.emit("createconnection", str(request.sid), room=target)
-
