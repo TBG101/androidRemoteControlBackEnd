@@ -31,8 +31,8 @@ class User(db.Model):
         self.password = hashpw(password.encode(
             'utf-8'), gensalt()).decode('utf-8')
 
-    def checkPassword(self, password):
-        checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
+    def checkPassword(self, password) -> bool:
+        return checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
 
 
 # { "email": [ list of sid of phones here | "sid_here","sid_here "]}
