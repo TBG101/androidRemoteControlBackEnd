@@ -59,14 +59,14 @@ def register():
     password = data.get('password')
 
     if not username or not password:
-        return jsonify({'message': 'Missing username or email or password'}), 400
+        return jsonify({'message': 'Missing username or email or password'}), 409
     if (not validate_email(email=email)):
-        return jsonify({'message': 'Email is not Email type'}), 400
+        return jsonify({'message': 'Email is not Email type'}), 409
 
     existing_user = User.query.filter_by(email=email).first()
 
     if (existing_user):
-        return jsonify({'message': 'Email Exists'}), 400
+        return jsonify({'message': 'Email Exists'}), 409
 
     new_user = User(name=username, email=email, password=password)
     db.session.add(new_user)
@@ -114,40 +114,19 @@ def handle_connect():
             else:
                 connected_pcs[userConnected] = [str(request.sid)]
 
-    if (connected_phones.get(userConnected)):
-        items_to_keep = [
-            item for item in connected_phones[userConnected] if not is_user_connected(item)]
-        connected_phones[userConnected].clear()
-        connected_phones[userConnected].extend(items_to_keep)
-    if (connected_pcs.get(userConnected) != None):
-        # need to remove this part
-        items_to_keep = [
-            item for item in connected_pcs[userConnected] if not is_user_connected(item)]
-        connected_pcs[userConnected].clear()
-        connected_pcs[userConnected].extend(items_to_keep)
-        if (len(connected_pcs.get(userConnected)) > 0 and connected_phones.get(userConnected)):
-            for i in connected_pcs[userConnected]:
-                socketio.emit("getphones", str(
-                    connected_phones[userConnected]), room=i)
-    print(connected_pcs)
-    print(connected_phones)
+
+@socketio.on("createconnection")
+@jwt_required()
+def handle_create_connection(data):
+    target = data["target"]
+    print(f"connection with {target} and {request.sid}")
+    socketio.emit("createconnection", str(request.sid), room=target)
 
 
 @app.route("/protected", methods=["GET"])
 @jwt_required()
 def checkAuth():
     return jsonify({"message": "Authorized"}), 200
-
-
-@app.route("/getphones", methods=["GET"])
-@jwt_required()
-def getPhones():
-    current_user = get_jwt_identity()
-    print(connected_pcs)
-    if (connected_phones.get(current_user) != None):
-        return jsonify({"phones": str(connected_phones[current_user])}), 200
-    else:
-        return jsonify({"phones": "none"}), 200
 
 
 @socketio.on("disconnect")
@@ -168,22 +147,6 @@ def handle_disconnect():
                     connected_pcs[userConnected].remove(str(request.sid))
                 except:
                     print("no item to remove")
-    if (connected_phones.get(userConnected)):
-        items_to_keep = [
-            item for item in connected_phones[userConnected] if not is_user_connected(item)]
-        connected_phones[userConnected].clear()
-        connected_phones[userConnected].extend(items_to_keep)
-    if (connected_pcs.get(userConnected)):
-        items_to_keep = [
-            item for item in connected_pcs[userConnected] if not is_user_connected(item)]
-        connected_pcs[userConnected].clear()
-        connected_pcs[userConnected].extend(items_to_keep)
-        if (len(connected_pcs.get(userConnected)) > 0 and connected_phones.get(userConnected)):
-            for i in connected_pcs[userConnected]:
-                socketio.emit("getphones", str(
-                    connected_phones[userConnected]), room=i)
-    print(connected_pcs)
-    print(connected_phones)
 
 
 @socketio.on('message')
@@ -213,11 +176,3 @@ def handle_image(data):
     except Exception as e:
         print(str(e))
         print("ERROR: uploading image")
-
-
-@socketio.on("createconnection")
-@jwt_required()
-def handle_create_connection(data):
-    target = data["target"]
-    print(f"connection with {target} and {request.sid}")
-    socketio.emit("createconnection", str(request.sid), room=target)
